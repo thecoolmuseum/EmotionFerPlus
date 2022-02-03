@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Unity.Barracuda;
 using System.Linq;
 
@@ -20,6 +21,10 @@ sealed class Test : MonoBehaviour
 
     const int ImageSize = 64;
 
+    WebCamTexture _webCamTexture = null;
+    
+    private IWorker worker = null;
+
     readonly static string[] Labels =
       { "Neutral", "Happiness", "Surprise", "Sadness",
         "Anger", "Disgust", "Fear", "Contempt"};
@@ -30,11 +35,18 @@ sealed class Test : MonoBehaviour
 
     void Start()
     {
-        using var worker = ModelLoader.Load(_model).CreateWorker();
+        worker = ModelLoader.Load(_model).CreateWorker();
 
+        _webCamTexture = new WebCamTexture(640 , 640, 30);
+        _preview.texture = _webCamTexture;
+        _webCamTexture.Play();
+    }
+
+    private void Update()
+    {
         // Preprocessing
         using var preprocessed = new ComputeBuffer(ImageSize * ImageSize, sizeof(float));
-        _preprocessor.SetTexture(0, "_Texture", _image);
+        _preprocessor.SetTexture(0, "_Texture", _preview.texture);
         _preprocessor.SetBuffer(0, "_Tensor", preprocessed);
         _preprocessor.Dispatch(0, ImageSize / 8, ImageSize / 8, 1);
 
@@ -47,8 +59,6 @@ sealed class Test : MonoBehaviour
         var sum = probs.Sum();
         var lines = Labels.Zip(probs, (l, p) => $"{l,-12}: {p / sum:0.00}");
         _label.text = string.Join("\n", lines);
-
-        _preview.texture = _image;
     }
 
     #endregion
