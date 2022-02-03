@@ -3,65 +3,67 @@ using UnityEngine.UI;
 using Unity.Barracuda;
 using System.Linq;
 
-namespace EmotionFerPlus {
-
-sealed class Test : MonoBehaviour
+namespace EmotionFerPlus
 {
-    #region Editable attributes
 
-    [SerializeField] Texture2D _image = null;
-    [SerializeField] NNModel _model = null;
-    [SerializeField] ComputeShader _preprocessor = null;
-    [SerializeField] UnityEngine.UI.RawImage _preview = null;
-    [SerializeField] UnityEngine.UI.Text _label = null;
+    sealed class Test : MonoBehaviour
+    {
+        #region Editable attributes
 
-    #endregion
+        [SerializeField] NNModel _model = null;
+        [SerializeField] ComputeShader _preprocessor = null;
+        [SerializeField] UnityEngine.UI.RawImage _preview = null;
+        [SerializeField] UnityEngine.UI.Text _label = null;
 
-    #region Compile-time constants
+        #endregion
 
-    const int ImageSize = 64;
+        #region Compile-time constants
 
-    WebCamTexture _webCamTexture = null;
-    
-    private IWorker worker = null;
+        const int ImageSize = 64;
 
-    readonly static string[] Labels =
-      { "Neutral", "Happiness", "Surprise", "Sadness",
+        WebCamTexture _webCamTexture = null;
+
+        private IWorker worker = null;
+
+        readonly static string[] Labels =
+          { "Neutral", "Happiness", "Surprise", "Sadness",
         "Anger", "Disgust", "Fear", "Contempt"};
 
-    #endregion
+        #endregion
 
-    #region MonoBehaviour implementation
+        #region MonoBehaviour implementation
 
-    void Start()
-    {
-        worker = ModelLoader.Load(_model).CreateWorker();
+        void Start()
+        {
+            // Create Worker
+            worker = ModelLoader.Load(_model).CreateWorker();
 
-        _webCamTexture = new WebCamTexture(640 , 640, 30);
-        _preview.texture = _webCamTexture;
-        _webCamTexture.Play();
+            // start capture from WebCam
+            _webCamTexture = new WebCamTexture(640, 640, 30);
+            _preview.texture = _webCamTexture;
+            _webCamTexture.Play();
+        }
+
+        private void Update()
+        {
+            // Preprocessing
+            using var preprocessed = new ComputeBuffer(ImageSize * ImageSize, sizeof(float));
+            _preprocessor.SetTexture(0, "_Texture", _preview.texture);
+            _preprocessor.SetBuffer(0, "_Tensor", preprocessed);
+            _preprocessor.Dispatch(0, ImageSize / 8, ImageSize / 8, 1);
+
+            // Emotion recognition model
+            using (var tensor = new Tensor(1, ImageSize, ImageSize, 1, preprocessed))
+                worker.Execute(tensor);
+
+            // Output aggregation
+            var probs = worker.PeekOutput().AsFloats().Select(x => Mathf.Exp(x));
+            var sum = probs.Sum();
+            var lines = Labels.Zip(probs, (l, p) => $"{l,-12}: {p / sum:0.00}");
+            _label.text = string.Join("\n", lines);
+        }
+
+        #endregion
     }
-
-    private void Update()
-    {
-        // Preprocessing
-        using var preprocessed = new ComputeBuffer(ImageSize * ImageSize, sizeof(float));
-        _preprocessor.SetTexture(0, "_Texture", _preview.texture);
-        _preprocessor.SetBuffer(0, "_Tensor", preprocessed);
-        _preprocessor.Dispatch(0, ImageSize / 8, ImageSize / 8, 1);
-
-        // Emotion recognition model
-        using (var tensor = new Tensor(1, ImageSize, ImageSize, 1, preprocessed))
-            worker.Execute(tensor);
-
-        // Output aggregation
-        var probs = worker.PeekOutput().AsFloats().Select(x => Mathf.Exp(x));
-        var sum = probs.Sum();
-        var lines = Labels.Zip(probs, (l, p) => $"{l,-12}: {p / sum:0.00}");
-        _label.text = string.Join("\n", lines);
-    }
-
-    #endregion
-}
 
 } // namespace EmotionFerPlus
