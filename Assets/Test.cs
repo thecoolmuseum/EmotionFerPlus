@@ -52,6 +52,7 @@ namespace EmotionFerPlus
 
         private void Update()
         {
+            // Change webcamera
             if (Input.GetKeyDown("space"))
             {
                 WebCamDevice[] devices = WebCamTexture.devices;
