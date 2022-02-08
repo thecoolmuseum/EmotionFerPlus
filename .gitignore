@@ -19,6 +19,7 @@ Desktop.ini
 /Recordings
 /UserSettings
 /Temp
+/Build
 
 # ONNX
 *.onnx

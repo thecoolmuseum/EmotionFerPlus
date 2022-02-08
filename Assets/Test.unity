@@ -232,8 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fe1873ea6b3c2c438bdf20b47e0057b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _image: {fileID: 2800000, guid: b14b89051db51f94e88fbd1f8f6fcbb0, type: 3}
-  _model: {fileID: 5022602860645237092, guid: 9b8c17231eecb044289dbe5643d68164, type: 3}
+  _model: {fileID: 5022602860645237092, guid: 531fbab335663fb4dbce4e62d385c1e6, type: 3}
   _preprocessor: {fileID: 7200000, guid: f81701aead3b8df45b4dbf2a4666dd88, type: 3}
   _preview: {fileID: 1824815490}
   _label: {fileID: 982789938}

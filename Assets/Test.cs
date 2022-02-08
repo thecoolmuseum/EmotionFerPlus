@@ -29,6 +29,8 @@ namespace EmotionFerPlus
           { "Neutral", "Happiness", "Surprise", "Sadness",
         "Anger", "Disgust", "Fear", "Contempt"};
 
+        private int _cameraIndex = 0;
+
         #endregion
 
         #region MonoBehaviour implementation
@@ -39,13 +41,34 @@ namespace EmotionFerPlus
             worker = ModelLoader.Load(_model).CreateWorker();
 
             // start capture from WebCam
-            _webCamTexture = new WebCamTexture(640, 640, 30);
+            WebCamDevice[] devices = WebCamTexture.devices;
+
+            _webCamTexture = new WebCamTexture(
+                devices[_cameraIndex].name,
+                640, 640, 30);
             _preview.texture = _webCamTexture;
             _webCamTexture.Play();
         }
 
         private void Update()
         {
+            if (Input.GetKeyDown("space"))
+            {
+                WebCamDevice[] devices = WebCamTexture.devices;
+                _cameraIndex ++;
+                if(_cameraIndex >= devices.Length){
+                    _cameraIndex = 0;
+                }
+                if(_webCamTexture != null){
+                    _webCamTexture.Stop();
+                }
+                _webCamTexture = new WebCamTexture(
+                    devices[_cameraIndex].name,
+                    640, 640, 30);
+                _preview.texture = _webCamTexture;
+                _webCamTexture.Play();
+            }
+
             // Preprocessing
             using var preprocessed = new ComputeBuffer(ImageSize * ImageSize, sizeof(float));
             _preprocessor.SetTexture(0, "_Texture", _preview.texture);
