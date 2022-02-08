@@ -36,31 +36,33 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "jp.torinos.mediapipe.blazepose": {
-      "version": "file:jp.torinos.mediapipe.blazepose",
+    "jp.ikep.mediapipe.blazepose": {
+      "version": "https://github.com/creativeIKEP/BlazePoseBarracuda.git?path=Packages/BlazePoseBarracuda#v1.1.1",
       "depth": 0,
-      "source": "embedded",
+      "source": "git",
       "dependencies": {
-        "com.unity.barracuda": "1.4.0-preview",
-        "jp.torinos.mediapipe.posedetector": "1.0.0",
-        "jp.torinos.mediapipe.poselandmark": "1.0.0"
-      }
+        "jp.ikep.mediapipe.posedetection": "1.0.0",
+        "jp.ikep.mediapipe.poselandmark": "1.1.0"
+      },
+      "hash": "88f45ddba35502d6c7ede49df44049970c543520"
     },
-    "jp.torinos.mediapipe.posedetector": {
-      "version": "file:jp.torinos.mediapipe.posedetector",
+    "jp.ikep.mediapipe.posedetection": {
+      "version": "https://github.com/creativeIKEP/PoseDetectionBarracuda.git?path=Packages/PoseDetectionBarracuda#v1.0.0",
       "depth": 0,
-      "source": "embedded",
+      "source": "git",
       "dependencies": {
-        "com.unity.barracuda": "1.4.0-preview"
-      }
+        "com.unity.barracuda": "2.0.0-pre.3"
+      },
+      "hash": "33279c9945e16244a62edcdc8804ee284f58e3af"
     },
-    "jp.torinos.mediapipe.poselandmark": {
-      "version": "file:jp.torinos.mediapipe.poselandmark",
+    "jp.ikep.mediapipe.poselandmark": {
+      "version": "https://github.com/creativeIKEP/PoseLandmarkBarracuda.git?path=Packages/PoseLandmarkBarracuda#v1.1.0",
       "depth": 0,
-      "source": "embedded",
+      "source": "git",
       "dependencies": {
-        "com.unity.barracuda": "1.4.0-preview"
-      }
+        "com.unity.barracuda": "2.0.0-pre.3"
+      },
+      "hash": "e57ab453b61efebdadeb94589a13336734f78af2"
     },
     "com.unity.modules.audio": {
       "version": "1.0.0",
